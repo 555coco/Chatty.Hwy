@@ -15,10 +15,11 @@ import { useThemeStore } from './store/useThemeStore.js'
 
 function App() {
 
-  const { authUser, checkAuth, isCheckingAuth } = useAuthStore()
+  const { authUser, checkAuth, isCheckingAuth, onlineUsers} = useAuthStore()
   const { theme } = useThemeStore()
 
   console.log({ authUser })
+  console.log('onlineUsers:',onlineUsers)
 
   useEffect(() => {
     checkAuth()
@@ -39,8 +40,8 @@ function App() {
         <Routes>
           <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
           <Route path="/login" element={authUser ? <Navigate to="/" /> : <LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/settings" element={authUser ? <SettingPage /> : <Navigate to="/" />} />
+          <Route path="/signup" element={authUser ? <Navigate to="/" /> : <SignupPage />} />
+          <Route path="/settings" element={<SettingPage />} />
           <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} /> 
         </Routes>
 

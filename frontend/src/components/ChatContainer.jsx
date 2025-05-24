@@ -10,14 +10,23 @@ import { formatMessageTime } from "../lib/utils";
 import React from 'react'
 
 const ChatContainer = () => {
-  const {messages, getMessages, isMessagesLoading, selectedUser} = useChatStore()
+  const {messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unSubscribeToMessages} = useChatStore()
   const {authUser} = useAuthStore()
-  const messageEndRef = useRef()
+  const messageEndRef = useRef(null)
 
-  console.log('message:',messages)
   useEffect(()=>{
     getMessages(selectedUser._id)
-  },[selectedUser._id,getMessages])
+
+    subscribeToMessages()
+
+    return () => unSubscribeToMessages()
+  },[selectedUser._id, getMessages, subscribeToMessages, unSubscribeToMessages])
+
+
+  useEffect(() => {
+    const shouldScroll = messages.length > 0 || isMessagesLoading === false;
+    if(shouldScroll && messageEndRef.current) messageEndRef.current.scrollIntoView({behavior:"smooth"})
+  },[messages,isMessagesLoading])
 
   if(isMessagesLoading){
     return(<MessageSkeleton />)
@@ -28,7 +37,7 @@ const ChatContainer = () => {
 
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+        {messages?.map((message) => (message && message.senderId &&(
           <div
             key={message._id}
             className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
@@ -51,7 +60,7 @@ const ChatContainer = () => {
                 {formatMessageTime(message.createdAt)}
               </time>
             </div>
-            <div className="chat-bubble flex flex-col bg-primary/100 text-primary-content">
+            <div className="chat-bubble flex flex-col bg-primary/100 text-primary-content rounded-2xl">
               {message.image && (
                 <img
                   src={message.image}
@@ -61,7 +70,7 @@ const ChatContainer = () => {
               )}
               {message.text && <p>{message.text}</p>}
             </div>
-          </div>
+          </div>)
         ))}
       </div>
 

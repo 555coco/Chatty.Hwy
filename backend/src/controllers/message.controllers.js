@@ -1,6 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 export const getUsersForSidebar = async (req,res) => {
     try {
@@ -57,8 +58,15 @@ export const sendMessage = async (req,res) =>{
         await newMessage.save()
 
         //TODO 
+        const receiverSocketId = getReceiverSocketId(receiverId)
+        console.log('receiverSocketId:',receiverSocketId)
+        if(receiverSocketId){
+            io.to(receiverSocketId).emit("newMessage",newMessage)
+        }
+
         res.status(201).json(newMessage)
     } catch (error) {
         console.log('Internal sever wrong',error)
+        res.status(500).json({ error: "Internal server wrong"})
     }
 }

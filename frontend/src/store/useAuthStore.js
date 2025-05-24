@@ -1,6 +1,9 @@
 import { axiosInstance } from "../lib/axios.js"
 import { create } from "zustand"
 import { toast } from "react-hot-toast"
+import { io } from "socket.io-client"
+import { useChatStore } from "./useChatStore.js"
+
 
 
 
@@ -11,8 +14,6 @@ export const useAuthStore = create((set,get) => ({
     isSigningUp:false,
     isLoggingIn:false,
     isUpdatingProfile:false,
-
-    //在 checkAuth 函数执行时，设置为 true，当身份检查完成（无论成功与否）后设置为 false。
     isCheckingAuth:true,
     onlineUsers:[],
     socket:null,
@@ -24,8 +25,8 @@ export const useAuthStore = create((set,get) => ({
     checkAuth: async () => {
         try {
             const res = await axiosInstance.get("/auth/check",{withCredentials:true})
-            console.log("response res:",res)
             set({authUser: res.data})
+            get().connectSocket()
         } catch (error) {
             console.log('Error in checkAuth',error)
             set({authUser:null})
@@ -56,7 +57,7 @@ export const useAuthStore = create((set,get) => ({
       set({ authUser: res.data });
       toast.success("Logged in successfully");
 
-
+      get().connectSocket()
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -68,7 +69,9 @@ export const useAuthStore = create((set,get) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ authUser: null });
+      useChatStore.getState().setSelectedUser(null)
       toast.success("Logged out successfully");
+      get().disconnectSocket()
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -86,6 +89,28 @@ export const useAuthStore = create((set,get) => ({
     } finally {
       set({ isUpdatingProfile: false });
     }
+  },
+
+    connectSocket: () => {
+    const { authUser } = get();
+    if (!authUser || get().socket?.connected) return;
+    
+    const socket = io(BASE_URL,{
+      query:{
+        userId:authUser._id
+      }
+    })
+    socket.connect()
+    
+    set({socket:socket})
+
+    socket.on("getOnlineUsers",(userIds) => {
+      set({onlineUsers:userIds})
+    })
+  },
+
+    disconnectSocket: () => {
+    if (get().socket?.connected) get().socket.disconnect();
   },
 
 }))

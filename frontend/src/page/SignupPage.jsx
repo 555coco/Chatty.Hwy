@@ -45,9 +45,9 @@ const SignupPage = () => {
         <div className='w-full max-w-md space-y-8'>
           <div className='text-center mb-8'>
             <div className='flex flex-col items-center gap-2 group'>
-              <div className='size-12 rounded-xl border-black bg-accent items-center justify-center hover:bg-blue-700 
+              <div className='size-12 rounded-xl border-black bg-accent items-center justify-center bg-base-100/80 
               transition-clors'>
-                  <MessageSquare className='size-6 ml-3 mt-3'></MessageSquare>
+                  <MessageSquare className='size-6 ml-3 mt-3 text-primary'></MessageSquare>
               </div>
               <h1 className='text-2xl font-bold mt-2 text-primary-content'>Create Account</h1>
               <p className='text-primary-content'>Get started with your free account</p>

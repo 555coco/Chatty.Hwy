@@ -30,8 +30,8 @@ const LoginPage = () => {
           {/**Logo */}
           <div className='text-center mb-8'>
             <div className='items-center flex flex-col'>
-              <div className='w-12 h-12 rounded-2xl flex items-center justify-center transition-colors bg-accent'>
-                <MessageSquare className='w-6 h-6 '></MessageSquare>
+              <div className='w-12 h-12 rounded-2xl flex items-center justify-center transition-colors bg-base-100/80' >
+                <MessageSquare className='w-6 h-6 text-primary'></MessageSquare>
               </div>
               <h1 className='font-bold text-2xl'>welcome back</h1>
               <p className=''>Sign in your account</p>
