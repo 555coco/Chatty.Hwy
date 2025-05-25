@@ -7,7 +7,7 @@ import { useChatStore } from "./useChatStore.js"
 
 
 
-const BASE_URL = 'http://localhost:5001'
+const BASE_URL = import.meta.env.NODE === "devlopment" ? "http://localhost:5001/api" : "/"
 
 export const useAuthStore = create((set,get) => ({
     authUser:null,

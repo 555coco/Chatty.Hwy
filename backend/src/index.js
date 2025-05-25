@@ -8,6 +8,11 @@ import cors from "cors"
 import bodyParser from "body-parser"
 import {server, io, app} from "../src/lib/socket.js"
 
+import path from "path"
+
+
+const PORT = process.env.PORT
+const _dirname = path.resolve()
 
 app.use(express.json())
 app.use(cors({
@@ -22,8 +27,14 @@ app.use("/api/messages",messageRouter)
 
 dotenv.config()
 
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(_dirname,"../frontend/dist")))
+    app.get("*",(req,res) => {
+        res.sendFile(path.join(_dirname,"../frontend","dist","index.html"))
+    })
+}
 
-server.listen(5001, () => {
+server.listen(PORT, () => {
     console.log('server is running at 5001')
     connectDB();
 })
